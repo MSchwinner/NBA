@@ -1,12 +1,15 @@
 
 # Packages ----------------------------------------------------------------
 
+#install.packages("readxl")
 library(readxl)
+#install.packages("ggplot2")
 library(ggplot2)
-#install.packages("dplyr")
-library(dplyr)
-#install.packages("caret")
+# install.packages("caret",
+#                  repos = "http://cran.r-project.org",
+#                  dependencies = c("Depends","Imports","Suggests"))
 library(caret)
+#install.packages("corrplot")
 library(corrplot)
 #install.packages("e1071")
 library(e1071)
@@ -16,17 +19,20 @@ library(RANN)
 library(randomForest)
 #install.packages("skimr")
 library(skimr)
+#install.packages("dplyr")
+library(dplyr)
 
 # Wrangling ---------------------------------------------------------------
-## ToDo:
-#     - Incorporate advanced data from previous seasons
 
 source("Scripts/Wrangling.R")
-
 
 # Preprocessing -----------------------------------------------------------
 
 source("Scripts/Preprocessing.R")
+
+# Random Forest -----------------------------------------------------------
+
+source("Scripts/RandomForest.R")
 
 # Team Records ------------------------------------------------------------
 

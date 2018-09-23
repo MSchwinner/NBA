@@ -7,7 +7,7 @@ k <- 1
 
 for (i in 2013:2018) {
   nam <- paste("g", i, sep = "")
-  df_game[[k]] <- assign(nam, read_excel(paste("C:/Users/AT0723302/Desktop/NBA/Data/",i,"_game.xlsx",sep=""))) %>% 
+  df_game[[k]] <- assign(nam, read_excel(paste("Data/",i,"_game.xlsx",sep=""))) %>% 
     group_by(Player) %>%
     top_n(n=1,G)
   
@@ -22,7 +22,7 @@ j <- 1
 
 for (i in 2013:2018) {
   nam <- paste("adv", i, sep = "")
-  df_adv[[j]] <- assign(nam, read_excel(paste("C:/Users/AT0723302/Desktop/NBA/Data/",i,"_adv.xlsx",sep=""))) %>% 
+  df_adv[[j]] <- assign(nam, read_excel(paste("Data/",i,"_adv.xlsx",sep=""))) %>% 
     group_by(Player) %>% 
     mutate(vorp_total = VORP) %>% 
     top_n(n=1,G)
@@ -57,7 +57,7 @@ for (i in 4:6) {
 df <- bind_rows(df6,df5,df4) %>% 
   subset(!is.na(Year.x))
 
-df <- rename(df, Player = Player, vorp_total = vorp_total, Year_t1 = Year.x, Pos_t1 = Pos.x,
+df <- dplyr::rename(df, Player = Player, vorp_total = vorp_total, Year_t1 = Year.x, Pos_t1 = Pos.x,
              Age_t1 = Age.x, Tm_t1 = Tm.x, G_t1 = G.x, GS_t1 = GS.x, MP_t1 = MP.x, FG_t1 = FG.x,
              FGA_t1 = FGA.x, FGPer_t1 = FG..x, FG3_t1 = X3P.x, FGA3_t1 = X3PA.x, FG3Per_t1 = X3P..x,
              FG2_t1 = X2P.x, FGA2_t1 = X2PA.x, FG2Per_t1 = X2P..x, eFG_t1 = eFG..x, FT_t1 = FT.x,
@@ -98,3 +98,4 @@ df <- rename(df, Player = Player, vorp_total = vorp_total, Year_t1 = Year.x, Pos
 #df <- df[-which(df$bpm_total < -45),]
 
 rm(list=setdiff(ls(), "df")) #remove all objects except for df
+gc()

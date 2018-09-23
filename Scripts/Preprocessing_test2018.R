@@ -1,5 +1,3 @@
-skimr::skim(df)
-
 
 # Seperate Data -----------------------------------------------------------
 # Character/Factor Variables
@@ -74,7 +72,7 @@ df_num_knn_filtered <- df_num_knn[, -cor_high]
 
 # Skewness ----------------------------------------------------------------
 
-skewValues <- apply(df_num_mean_filtered, MARGIN=2, skewness) 
+#skewValues <- apply(df_num_mean_filtered, MARGIN=2, skewness) 
 #summary(skewValues)
 #skewValues
 
@@ -107,5 +105,5 @@ df_pred <- df[testingRow, ]
 
 rm(list=setdiff(ls(), c("df", "testinggRow", "x_mean_train", "x_knn_train",
                         "y_train", "x_mean_test", "x_knn_test", "y_test",
-                        "df_pred"))) 
+                        "df_pred", "lm_teams"))) 
 

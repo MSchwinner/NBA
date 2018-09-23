@@ -1,5 +1,4 @@
-skimr::skim(df)
-
+#skimr::skim(df)
 
 # Seperate Data -----------------------------------------------------------
 # Character/Factor Variables
@@ -66,7 +65,7 @@ cor_num <- cor(df_num_mean)
 #corrplot(cor_num, order = "hclust")
 
 #Delete suggested variables with high correlation with other features
-cor_high <- findCorrelation(cor_num, cutoff = .95)  #findCorrelation function of carret to search correlation matrix
+cor_high <- findCorrelation(cor_num, cutoff = .95)  #findCorrelation function of caret to search correlation matrix
 names(df_num_mean[,cor_high]) # deleted variables due to collinearity
 
 df_num_mean_filtered <- df_num_mean[, -cor_high]
@@ -74,7 +73,7 @@ df_num_knn_filtered <- df_num_knn[, -cor_high]
 
 # Skewness ----------------------------------------------------------------
 
-skewValues <- apply(df_num_mean_filtered, MARGIN=2, skewness) 
+#skewValues <- apply(df_num_mean_filtered, MARGIN=2, skewness) 
 #summary(skewValues)
 #skewValues
 
@@ -109,4 +108,6 @@ df_pred <- df[-trainingRow, ]
 rm(list=setdiff(ls(), c("df", "trainingRow", "x_mean_train", "x_knn_train",
                         "y_train", "x_mean_test", "x_knn_test", "y_test",
                         "df_pred"))) 
+gc()
+
 

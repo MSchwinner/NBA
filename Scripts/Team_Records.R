@@ -2,10 +2,10 @@ df_adv <- list()
 j <- 1
 for (i in 2013:2018) {
   nam <- paste("adv", i, sep = "")
-  df_adv[[j]] <- assign(nam, read_excel(paste("C:/Users/AT0723302/Desktop/NBA/Data/",i,"_adv.xlsx",sep="")) %>% 
+  df_adv[[j]] <- assign(nam, read_excel(paste("Data/",i,"_adv.xlsx",sep="")) %>% 
   subset(., Tm != "TOT") %>% 
     group_by(Tm) %>% 
-    summarize(max_vorp = max(VORP),
+    dplyr::summarize(max_vorp = max(VORP),
               min_vorp = min(VORP),
               mean_vorp = mean(VORP),
               median_vorp = median(VORP),
@@ -19,7 +19,7 @@ df_adv[[1]]$Tm[which(df_adv[[1]]$Tm == "NOH")] <- "NOP"
 df_adv[[1]]$Tm[which(df_adv[[1]]$Tm == "CHA")] <- "CHO"
 df_adv[[2]]$Tm[which(df_adv[[2]]$Tm == "CHA")] <- "CHO"
 
-teams <- read_excel("C:/Users/AT0723302/Desktop/NBA/Data/Team_Performance.xlsx", sheet = 2) %>% 
+teams <- read_excel("Data/Team_Performance.xlsx", sheet = 2) %>% 
   mutate_if(is.character, as.factor)
 
 skim(teams)
