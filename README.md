@@ -2,9 +2,6 @@
 
 This project focuses on predicting athlete-performance in the National Basketball Association (NBA) and extrapolating to team performance.
 
-## Languages
-R
-
 ## R Packages
 
 * [readxl](https://cran.r-project.org/web/packages/readxl/readxl.pdf): Import of Data
@@ -14,3 +11,8 @@ R
 * [corrplot](https://cran.r-project.org/web/packages/corrplot/corrplot.pdf): Visualization of Correlations
 * [caret](https://cran.r-project.org/web/packages/caret/caret.pdf): Modelling framework
 * [randomForest](https://cran.r-project.org/web/packages/randomForest/randomForest.pdf): Random Forest
+
+##ToDos
+
+* Rookie data and predictions
+* 2019/20 season and predictions

@@ -1,5 +1,9 @@
 # Data Import -------------------------------------------------------------
 
+rookies <- read.csv("Data/NBA_Draft_1980_2017.csv")
+rookies$player <- as.character(rookies$player)
+rookies$year <- as.integer(rookies$year)
+
 #createing list of dataframes with game data
 df_game <- list()
 k <- 1
@@ -25,35 +29,17 @@ for (i in 2013:2018) {
     group_by(Player) %>% 
     mutate(vorp_total = VORP) %>% 
     top_n(n=1,G)
-  
   #colnames(df_adv[[j]])[-c(1,2)] <- paste(colnames(df_adv[[j]])[-c(1,2)],df_adv[[j]]$Year[[1]], sep="_")
   j <- j+1
 }
 
-
-# Wrangling ---------------------------------------------------------------
-
-#creating merged dataframes by Player (t, t-1, t-2, ...) 
-for (i in 4:6) {
-  nam <- paste("df", i, sep = "")
-  x <- merge(data.frame(Player=df_adv[[i]][,2],bpm_total=df_adv[[i]][,28]), df_game[[i-1]], by="Player")
-  x <- merge(x, df_game[[i-2]], by = "Player", all.x=TRUE)
-  x <- merge(x, df_game[[i-3]], by = "Player", all.x=TRUE)
-  x <- merge(x, df_adv[[i-1]][, - c(1,3:7,length(df_adv[[i-1]]))], by = "Player", all.x=TRUE)
-  x <- merge(x, df_adv[[i-2]][, - c(1,3:7,length(df_adv[[i-2]]))], by = "Player", all.x=TRUE)
-  x <- merge(x, df_adv[[i-3]][, - c(1,3:7,length(df_adv[[i-3]]))], by = "Player", all.x=TRUE)
-  assign(nam, data.frame(x))
+df_adv_rbdind <- df_adv[[1]]
+for(i in 2:length(df_adv)) {
+  df_adv_rbdind <- rbind(df_adv_rbdind, df_adv[[i]])
 }
 
-# for (i in 3) {
-#   nam <- paste("df", i, sep = "")
-#   x <- merge(data.frame(Player=df_adv[[i]][,2],bpm_total=df_adv[[i]][,28]), df_game[[i-1]], by="Player")
-#   x <- merge(x, df_game[[i-2]], by = "Player", all.x=TRUE)
-#   assign(nam, data.frame(x))
-# }
+df_adv_rbdind$Player_last <- strsplit(df_adv_rbdind$Player, " ")[[1]][2]
 
-skim(df6)
-
-# bind merged dataframes together 
-df_rookies <- bind_rows(df6,df5,df4) %>% 
-  subset(is.na(Year.x))
+df_rookies <- merge(rookies, df_adv_rbdind, by.x = c("player"),
+                    by.y = c("Player_last"))
+  select(Player, year, pick, Pos, Age, vorp_total)
