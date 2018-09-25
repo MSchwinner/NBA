@@ -12,7 +12,7 @@ This project focuses on predicting athlete-performance in the National Basketbal
 * [caret](https://cran.r-project.org/web/packages/caret/caret.pdf): Modelling framework
 * [randomForest](https://cran.r-project.org/web/packages/randomForest/randomForest.pdf): Random Forest
 
-##ToDos
+## ToDos
 
-* Rookie data and predictions
+* Testfile start 2018/19 season - compare to Vegas Line and other Predictions
 * 2019/20 season and predictions

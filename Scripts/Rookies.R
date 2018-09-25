@@ -1,8 +1,8 @@
 # Data Import -------------------------------------------------------------
 
-rookies <- read.csv("Data/NBA_Draft_1980_2017.csv")
-rookies$player <- as.character(rookies$player)
-rookies$year <- as.integer(rookies$year)
+rookies <- read.csv("Data/Rookies.csv")
+rookies$Player <- as.character(rookies$Player)
+rookies$Year <- as.numeric(rookies$Year) +1
 
 #createing list of dataframes with game data
 df_game <- list()
@@ -38,8 +38,31 @@ for(i in 2:length(df_adv)) {
   df_adv_rbdind <- rbind(df_adv_rbdind, df_adv[[i]])
 }
 
-df_adv_rbdind$Player_last <- strsplit(df_adv_rbdind$Player, " ")[[1]][2]
 
-df_rookies <- merge(rookies, df_adv_rbdind, by.x = c("player"),
-                    by.y = c("Player_last"))
-  select(Player, year, pick, Pos, Age, vorp_total)
+# Merge Data --------------------------------------------------------------
+
+df_rookies <- dplyr::inner_join(rookies, df_adv_rbdind, by = c("Player","Year")) %>% 
+  select(Player, Tm = Tm.y, Year, Pk, Pos=Pos.y, College, Age=Age.y, vorp_total)
+
+#dont't forget redshirt rookies!
+redshirt <- df_adv_rbdind %>% 
+  filter(Player %in% subset(rookies,!(rookies$Player %in% df_rookies$Player))$Player) %>% 
+  group_by(Player) %>% 
+  filter(Year == min(Year))
+
+redshirt_rookies <- dplyr::inner_join(rookies,redshirt, by = c("Player")) %>% 
+  select(Player, Tm = Tm.y, Year = Year.y, Pk, Pos=Pos.y, College, Age=Age.y, vorp_total)
+
+df_rookies <- rbind(df_rookies,redshirt_rookies)
+
+
+# Model -------------------------------------------------------------------
+
+
+rookie_lm <- lm(data=df_rookies,vorp_total ~ Pk + I(Pk^2) + Age + I(Age^2) + 
+             factor(Year)+Pos+Tm+College)
+summary(rookie_lm)
+
+df_rookies$vorp_pred <- round(predict(rookie_lm),2)
+
+

@@ -5,6 +5,11 @@ source("Scripts/Preprocessing_test2018.R")
 
 source("Scripts/RandomForest.R")
 
+source("Scripts/Rookies.R")
+
+source("Scripts/Team_Records.R")
+
+
 predictions <- data.frame(Player = df_pred$Player,
                           Year = df_pred$Year_t1+1,
                           y = y_test,
@@ -23,6 +28,14 @@ adv2018 <- read_excel("Data/2018_adv.xlsx") %>%
 
 df2018 <- merge(predictions, adv2018, by = "Player") %>% 
   dplyr::select(Player, Team = Tm, G, MP, vorp = VORP, prediction_vorp = y_rf_mean)
+
+rookies_2018 <- df_rookies %>% 
+  filter(Year == 2018)
+
+rookies_2018 <- merge(rookies_2018, adv2018, by = "Player") %>% 
+  dplyr::select(Player, Team = Tm.y, G, MP, vorp = VORP, prediction_vorp = vorp_pred)
+
+df2018 <- rbind(df2018,rookies_2018)
 
 df_2018_Tm <- df2018 %>% 
   group_by(Team) %>% 
