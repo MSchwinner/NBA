@@ -21,6 +21,8 @@ library(randomForest)
 library(skimr)
 #install.packages("dplyr")
 library(dplyr)
+#install.packages("plotly")
+library(plotly)
 
 # Wrangling ---------------------------------------------------------------
 

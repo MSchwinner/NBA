@@ -1,0 +1,13 @@
+base
+readxl
+ggplot2
+lattice
+caret
+corrplot
+e1071
+RANN
+randomForest
+skimr
+dplyr
+plotly
+bindrcpp

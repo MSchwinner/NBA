@@ -105,9 +105,9 @@ df_pred <- df[-trainingRow, ]
 
 # Clean up ----------------------------------------------------------------
 
-rm(list=setdiff(ls(), c("df", "trainingRow", "x_mean_train", "x_knn_train",
-                        "y_train", "x_mean_test", "x_knn_test", "y_test",
-                        "df_pred"))) 
+rm(list = c("preProcValues", "df_num_mean_filter",
+            "df_num_mean", "df_num_knn_filtered", "df_num_knn",
+            "df_num", "df_fac_imputed", "df_fac", "cor_num", "cor_high"))
 gc()
 
 

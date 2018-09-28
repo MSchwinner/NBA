@@ -36,7 +36,7 @@ ggplot(predictions, aes(x=y_rf_knn, y = y)) +
   theme_bw()
 
 # visualize errors in training set
-ggplot(predictions_training, aes(x=y_rf_knn, y = y)) +
+ggplot(predictions_training, aes(x=y_rf_mean, y = y)) +
   geom_jitter()+
   geom_abline(linetype = 2)+
   geom_text(aes(label = ifelse(error_rf > 1.2, paste(Player, Year, sep = " "), "")), vjust = -1, size = 3, color = "red")+
