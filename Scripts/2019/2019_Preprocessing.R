@@ -1,4 +1,3 @@
-#skimr::skim(df)
 
 # Seperate Data -----------------------------------------------------------
 # Character/Factor Variables
@@ -62,10 +61,10 @@ skim(df_fac_imputed)
 # correlations of numeric variables
 
 cor_num <- cor(df_num_mean)
-corrplot(cor_num, order = "hclust")
+#corrplot(cor_num, order = "hclust")
 
 #Delete suggested variables with high correlation with other features
-cor_high <- findCorrelation(cor_num, cutoff = .95)  #findCorrelation function of caret to search correlation matrix
+cor_high <- findCorrelation(cor_num, cutoff = .95)  #findCorrelation function of carret to search correlation matrix
 names(df_num_mean[,cor_high]) # deleted variables due to collinearity
 
 df_num_mean_filtered <- df_num_mean[, -cor_high]
@@ -84,12 +83,20 @@ df_num_knn_filtered <- df_num_knn[, -cor_high]
 ## create dataframes for independent variables (x)
 x_mean <- cbind(df_num_mean_filtered, df_fac_imputed)
 x_knn <- cbind(df_num_knn_filtered, df_fac_imputed)
-  
+
 #create list of training obs. with createDataPartition function of caret (alternative sample())
+row_player2019 <- which(grepl(2018, x_mean$Year_t1))
+player2019 <- x_mean[row_player2019, ]
+
+y <- y[-row_player2019]
+x_mean <- x_mean[-row_player2019,]
+x_knn <- x_knn[-row_player2019,]
+
 set.seed(1234)
 trainingRow <- createDataPartition(y, 
                                    p=.85, #specifies percentage of obs. that get allocated
                                    list = FALSE) #stores #obs as a vector, not a list
+
 #create training dataset
 x_mean_train <- x_mean[trainingRow, ]
 x_knn_train <- x_knn[trainingRow, ]
@@ -105,9 +112,7 @@ df_pred <- df[-trainingRow, ]
 
 # Clean up ----------------------------------------------------------------
 
-rm(list = c("preProcValues", "df_num_mean_filter",
-            "df_num_mean", "df_num_knn_filtered", "df_num_knn",
-            "df_num", "df_fac_imputed", "df_fac", "cor_num", "cor_high"))
-gc()
-
+rm(list=setdiff(ls(), c("df", "player2019", "testinggRow", "x_mean_train", "x_knn_train",
+                        "y_train", "x_mean_test", "x_knn_test", "y_test",
+                        "df_pred", "lm_teams"))) 
 

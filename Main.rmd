@@ -46,10 +46,8 @@ predictions <- data.frame(Player = df_pred$Player,
                           Year = df_pred$Year_t1+1,
                           Pos = df_pred$Pos_t1,
                           y = y_test,
-                          y_rf_mean = rfPred,
-                          y_rf_knn = rfPred_knn) %>% 
-  mutate(error_rf_mean = y_rf_mean - y,
-         error_rf_knn = y_rf_knn - y) %>% 
+                          y_rf_mean = rfPred) %>% 
+  mutate(error_rf_mean = y_rf_mean - y) %>% 
   mutate_if(is.factor, as.character)
 
 predictions_training <- data.frame(Player = df[trainingRow, ]$Player,
