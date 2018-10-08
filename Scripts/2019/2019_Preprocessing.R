@@ -109,10 +109,11 @@ y_test <- y[-trainingRow]
 
 #df dataset
 df_pred <- df[-trainingRow, ]
+df_pred2019 <- df[row_player2019, ]
 
 # Clean up ----------------------------------------------------------------
 
 rm(list=setdiff(ls(), c("df", "player2019", "testinggRow", "x_mean_train", "x_knn_train",
                         "y_train", "x_mean_test", "x_knn_test", "y_test",
-                        "df_pred", "lm_teams"))) 
+                        "df_pred", "df_pred2019", "lm_teams"))) 
 

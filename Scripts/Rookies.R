@@ -51,7 +51,7 @@ redshirt <- df_adv_rbdind %>%
   filter(Year == min(Year))
 
 redshirt_rookies <- dplyr::inner_join(rookies,redshirt, by = c("Player")) %>% 
-  select(Player, Tm = Tm.y, Year = Year.y, Pk, Pos=Pos.y, College, Age=Age.y, vorp_total)
+  select(Player, Tm = Tm.y, Year = Year.y, Pk, Pos=Pos.x, College, Age=Age.y, vorp_total)
 
 df_rookies <- rbind(df_rookies,redshirt_rookies)
 
@@ -59,8 +59,7 @@ df_rookies <- rbind(df_rookies,redshirt_rookies)
 # Model -------------------------------------------------------------------
 
 
-rookie_lm <- lm(data=df_rookies,vorp_total ~ Pk + I(Pk^2) + Age + I(Age^2) + 
-             factor(Year)+Pos+Tm+College)
+rookie_lm <- lm(data=df_rookies,vorp_total ~ Pk + I(Pk^2) + Age + I(Age^2) + Pos+Tm)
 summary(rookie_lm)
 
 df_rookies$vorp_pred <- round(predict(rookie_lm),2)
