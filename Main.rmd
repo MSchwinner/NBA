@@ -184,3 +184,34 @@ q <- ggplot(df_2018_Tm, aes(x=Wins_pred, y = Wins, text = Team))+
 
 ggplotly(q)
 ```
+
+## 2018/19 season {.tabset .tabset-fade .tabset-pills}
+
+```{r 2019 predictions, include = FALSE}
+source("Scripts/2019/2019_Main.R")
+```
+
+### Teams
+```{r team performance 2019, echo = FALSE, warning = FALSE, cache = TRUE}
+q <- ggplot(predictions_2019, aes(y=Wins_pred_2019, x = Wins_Vegas_2019, text = Team))+
+  geom_point(aes(color = Sum_Error, size = abs(Sum_Error)))+
+  # geom_text(aes(label = Team), vjust = -1)+
+  geom_abline(linetype = 2)+
+  scale_x_continuous(breaks = seq(0,70,5))+
+  scale_y_continuous(breaks = seq(0,70,5))+
+  scale_color_gradient(low = "red", high = "limegreen")+
+  theme_bw()
+
+ggplotly(q)
+```
+
+### Player growth
+```{r player performance 2019, echo = FALSE, warning = FALSE, cache = TRUE}
+p <- ggplot(predictions2019, aes(x = vorp_t1, y = vorp_pred, text = Player)) +
+  geom_jitter(aes(color = Tm))+
+  # geom_text(aes(label = Team), vjust = -1)+
+  geom_abline(linetype = 2)+
+  theme_bw()
+
+ggplotly(p)
+```
