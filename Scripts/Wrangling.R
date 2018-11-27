@@ -9,7 +9,8 @@ for (i in 2013:2018) {
   nam <- paste("g", i, sep = "")
   df_game[[k]] <- assign(nam, read_excel(paste("Data/",i,"_game.xlsx",sep=""))) %>% 
     group_by(Player) %>%
-    top_n(n=1,G)
+    top_n(n=1,G) %>% 
+    mutate(Pos = if_else(substr(Pos,1,1) == "C","C", substr(Pos,1,2)))
   
   #colnames(df_game[[k]])[-c(2)] <- paste(colnames(df_game[[k]])[-c(2)],df_game[[k]]$Year[[1]], sep="_")
   

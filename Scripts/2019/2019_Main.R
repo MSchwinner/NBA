@@ -40,8 +40,8 @@ source("Scripts/RandomForest.R")
 fit2019 <- predict(rf, player2019)
 
 predictions2019 <- data.frame(Player = df_pred2019$Player,
-                          Year = df_pred2019$Year_t1+1,
-                          vorp_pred = fit2019) %>% 
+                              Year = df_pred2019$Year_t1+1,
+                              vorp_pred = fit2019) %>% 
   mutate_if(is.factor, as.character)
 
 adv2019 <- read_excel("Data/2019_adv.xlsx") %>% 
@@ -89,37 +89,37 @@ teams2018 <- subset(teams_all, teams_all$Year == 2018) %>%
 df_2019_Tm <- merge(df_2019_Tm, teams2018)
 
 Vegas_2019 <- data.frame(Team = c("PHI", "BOS", "OKC","GSW", "MIA", "MIL", "MEM",
-                             "DET", "IND", "CHO", "ORL", "BRK", "CLE",
-                             "NYK", "TOR", "ATL", "NOP", "HOU", "SAS",
-                             "SAC", "UTA", "LAC", "DEN", "DAL", "WAS",
-                             "CHI", "LAL", "POR"),
-                    Wins_Vegas_2019 = c(54, 58, 48.5, 63, 42.5, 47.5, 34.5, 
-                                   38.5, 47.5, 35.5, 31, 32, 30.5, 
-                                   29.5, 54.5, 23.5, 45, 55.5, 43.5, 
-                                   26, 49.5, 37.5, 47.5, 34.5, 45.5,
-                                   29.5, 48.5, 42))
+                                  "DET", "IND", "CHO", "ORL", "BRK", "CLE",
+                                  "NYK", "TOR", "ATL", "NOP", "HOU", "SAS",
+                                  "SAC", "UTA", "LAC", "DEN", "DAL", "WAS",
+                                  "CHI", "LAL", "POR"),
+                         Wins_Vegas_2019 = c(54, 58, 48.5, 63, 42.5, 47.5, 34.5, 
+                                             38.5, 47.5, 35.5, 31, 32, 30.5, 
+                                             29.5, 54.5, 23.5, 45, 55.5, 43.5, 
+                                             26, 49.5, 37.5, 47.5, 34.5, 45.5,
+                                             29.5, 48.5, 42))
 
 Pelton_2019 <- data.frame(Team = c("PHI", "BOS", "OKC","GSW", "MIA", "MIL", "MEM",
-                              "DET", "IND", "CHO", "ORL", "BRK", "CLE",
-                              "NYK", "TOR", "ATL", "NOP", "HOU", "SAS",
-                              "SAC", "UTA", "LAC", "DEN", "DAL", "WAS",
-                              "CHI", "LAL", "POR"),
-                     Wins_Pelton_2019 = c(47.8, 53.2, 47.2, 58.6, 44.8, 45.2, 33.1, 
-                                    39.4, 45.7, 38.3, 33.6, 36.8, 31, 
-                                    30.8, 55.1, 25.9, 44.1, 53, 38.5, 
-                                    25.4, 53.4, 35.5, 50.5, 32.1, 43.6,
-                                    28, 41.2, 42))
+                                   "DET", "IND", "CHO", "ORL", "BRK", "CLE",
+                                   "NYK", "TOR", "ATL", "NOP", "HOU", "SAS",
+                                   "SAC", "UTA", "LAC", "DEN", "DAL", "WAS",
+                                   "CHI", "LAL", "POR"),
+                          Wins_Pelton_2019 = c(47.8, 53.2, 47.2, 58.6, 44.8, 45.2, 33.1, 
+                                               39.4, 45.7, 38.3, 33.6, 36.8, 31, 
+                                               30.8, 55.1, 25.9, 44.1, 53, 38.5, 
+                                               25.4, 53.4, 35.5, 50.5, 32.1, 43.6,
+                                               28, 41.2, 42))
 
 Five38_2019 <- data.frame(Team = c("PHI", "BOS", "OKC","GSW", "MIA", "MIL", "MEM",
-                              "DET", "IND", "CHO", "ORL", "BRK", "CLE",
-                              "NYK", "TOR", "ATL", "NOP", "HOU", "SAS",
-                              "SAC", "UTA", "LAC", "DEN", "DAL", "WAS",
-                              "CHI", "LAL", "POR"),
-                     Wins_538_2019 = c(52, 53, 53, 64, 41, 47, 32, 
-                                    39, 43, 38, 33, 35, 30, 
-                                    25, 55, 28, 46, 54, 40, 
-                                    21, 54, 33, 48, 27, 48,
-                                    27, 46, 39))
+                                   "DET", "IND", "CHO", "ORL", "BRK", "CLE",
+                                   "NYK", "TOR", "ATL", "NOP", "HOU", "SAS",
+                                   "SAC", "UTA", "LAC", "DEN", "DAL", "WAS",
+                                   "CHI", "LAL", "POR"),
+                          Wins_538_2019 = c(52, 53, 53, 64, 41, 47, 32, 
+                                            39, 43, 38, 33, 35, 30, 
+                                            25, 55, 28, 46, 54, 40, 
+                                            21, 54, 33, 48, 27, 48,
+                                            27, 46, 39))
 
 df_2019_Tm <- merge(df_2019_Tm, Vegas_2019, all.x = TRUE) %>% 
   mutate(Wins_Vegas_2019 = if_else(is.na(Wins_Vegas_2019), Wins_pred_2019, Wins_Vegas_2019),

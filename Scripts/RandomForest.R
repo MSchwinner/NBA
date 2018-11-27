@@ -4,7 +4,8 @@
 
 #use mtry = 1/3 of predictors -> default for regressions
 rfGrid <- expand.grid(
-    mtry = round(length(x_mean_train)/3-5,0),
+    #mtry = seq(round(length(x_mean_train)/3-5,0), round(length(x_mean_train)/3+5,0), by=2),
+    mtry = round(length(x_mean_train)/3,0),
     splitrule = "variance",
     min.node.size = 5
   )

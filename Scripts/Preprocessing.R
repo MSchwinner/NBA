@@ -5,7 +5,7 @@
 df_fac <- select_if(df, is.character) %>% 
   select(-contains("Player")) #drop Player ID
 
-df_fac <- cbind(df_fac, select(df, contains("Year"))) #add Years to Factor Variables
+#df_fac <- cbind(df_fac, select(df, contains("Year"))) #add Years to Factor Variables
 
 # Numeric Variables
 df_num <- select_if(df, is.numeric) %>%  
@@ -15,8 +15,6 @@ df_num <- select_if(df, is.numeric) %>%
 
 df_fac[df_fac=="NOH"] <- "NOP"  #Name Change New Orleans
 df_fac[df_fac =="CHA"] <- "CHO" #Name Change Charlotte
-
-df_fac <- data.frame(lapply(df_fac, as.factor)) #transform variables into factors
 
 #unique(df_fac_imputed$Tm)
 #no dummy variables for now 
@@ -48,8 +46,8 @@ df_fac_imputed <- transform(df_fac_imputed, Pos_t2 = ifelse(!is.na(Pos_t2), Pos_
 df_fac_imputed <- transform(df_fac_imputed, Pos_t3 = ifelse(!is.na(Pos_t3), Pos_t3, Pos_t2))
 df_fac_imputed <- transform(df_fac_imputed, Tm_t2 = ifelse(!is.na(Tm_t2), Tm_t2, Tm_t1))
 df_fac_imputed <- transform(df_fac_imputed, Tm_t3 = ifelse(!is.na(Tm_t3), Tm_t3, Tm_t2))
-df_fac_imputed <- transform(df_fac_imputed, Year_t2 = ifelse(!is.na(Year_t2), Year_t2, as.numeric(Year_t1) - 1))
-df_fac_imputed <- transform(df_fac_imputed, Year_t3 = ifelse(!is.na(Year_t3), Year_t3, as.numeric(Year_t2) - 1))
+# df_fac_imputed <- transform(df_fac_imputed, Year_t2 = ifelse(!is.na(Year_t2), Year_t2, as.numeric(Year_t1) - 1))
+# df_fac_imputed <- transform(df_fac_imputed, Year_t3 = ifelse(!is.na(Year_t3), Year_t3, as.numeric(Year_t2) - 1))
 
 df_fac_imputed <- data.frame(lapply(df_fac_imputed, as.factor)) #transform characters into factors
 
@@ -106,8 +104,8 @@ df_pred <- df[-trainingRow, ]
 # Clean up ----------------------------------------------------------------
 
 rm(list = c("preProcValues", "df_num_mean_filter",
-            "df_num_mean", "df_num_knn_filtered", "df_num_knn",
-            "df_num", "df_fac_imputed", "df_fac", "cor_num", "cor_high"))
+            "df_num_knn_filtered", "df_num_knn",
+            "df_num", "df_fac_imputed", "df_fac"))
 gc()
 
 

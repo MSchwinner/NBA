@@ -30,53 +30,101 @@ library(skimr)
 library(dplyr)
 #install.packages("plotly")
 library(plotly)
+#install.packages("DT")
+#install.packages("htmlwidgets")
+library(DT)
 ```
 
-```{r data, include = FALSE, cache = TRUE}
+```{r data, include = FALSE}
 source("Scripts/Wrangling.R")
 source("Scripts/Preprocessing.R")
 ```
 
-```{r modeling, include = FALSE, cache = TRUE}
-source("Scripts/RandomForest.R")
+Unbalanced Panel of `r length(unique(df$Player))` NBA players from `r min(df$Year_t3, na.rm = TRUE)` to `r max(df$Year_t1, na.rm = TRUE)+1`: Outcome Value over replacemente player (VORP) and `r length(df)-1` features before preprocessing.
+
+```{r correlations}
+#create correlation matrix
+cor_num <- cor(df_num_mean)
+
+#delete suggested variables with high correlation with other features
+cor_high <- findCorrelation(cor_num, cutoff = .95)  
+
+names(df_num_mean[,cor_high]) # deleted variables due to collinearity
+
 ```
 
-```{r pred, include = FALSE}
+```{r show data}
+skim(x_mean_train)
+```
+
+
+```{r modeling, cache = TRUE}
+# Hyperparameter Grid for Random Forest
+rfGrid <- expand.grid(
+    mtry = seq(round(length(x_mean_train)/3-5,0), round(length(x_mean_train)/3+5,0), by=2),
+    #mtry = round(length(x_mean_train)/3,0),
+    splitrule = "variance",
+    min.node.size = 5
+  )
+
+# Random Forest via Caret's Train function & ranger lib
+set.seed(1234)
+rf <- train(x = x_mean_train, y = y_train,
+            method = "ranger",
+            num.trees = 500,
+            tuneGrid = rfGrid,
+            trControl = trainControl(method = "cv"),
+            importance = "permutation")
+```
+
+```{r modeling results}
+plot(rf)
+```
+
+
+```{r pred}
+
+#predict yhat for test set
+rfPred <- predict(rf, x_mean_test) 
+
+#data frame to compare predictions to outcomes in test data
 predictions <- data.frame(Player = df_pred$Player,
                           Year = df_pred$Year_t1+1,
                           Pos = df_pred$Pos_t1,
                           y = y_test,
-                          y_rf_mean = rfPred) %>% 
-  mutate(error_rf_mean = y_rf_mean - y) %>% 
+                          y_hat = rfPred) %>% 
+  mutate(error = y_hat - y) %>% 
   mutate_if(is.factor, as.character)
 
+#predictions df for training data
 predictions_training <- data.frame(Player = df[trainingRow, ]$Player,
                                    Year = df[trainingRow, ]$Year_t1+1,
                                    Pos = df[trainingRow, ]$Pos_t1,
                                    y = y_train,
-                                   y_rf_mean = predict(rf)) %>% 
-  mutate(error_rf = y_rf_mean - y)
+                                   y_hat = predict(rf)) %>% 
+  mutate(error = y_hat - y)
 ```
 
 ## Predictions Player Performance {.tabset .tabset-fade .tabset-pills}
 
 ### Test data
 
-The test data has `r length(predictions$Player)` observations with mean y of `r round(mean(predictions$y),2)` and standard deviation of `r round(sd(predictions$y),2)`.
+The test data has `r length(predictions$Player)` observations with mean y of `r round(mean(predictions$y),2)` and standard deviation of `r round(sd(predictions$y),2)`. The RMSE is `r sqrt(mean(predictions$error^2))`; the MAE is `r mean(abs(predictions$error))`.
 
 ```{r test data, echo = FALSE, warning = FALSE}
 
-predictions$y_rf_mean <- round(predictions$y_rf_mean,2)
+predictions$y_hat <- round(predictions$y_hat,2)
 
-p <- ggplot(predictions, aes(x=y_rf_mean, y = y, color = Pos,
+#ggplot visual
+p <- ggplot(predictions, aes(x=y_hat, y = y, color = Pos,
                              text = paste0(Player, " ", Year))) +
-  geom_jitter()+
+  geom_jitter(alpha=0.4, size = 1)+
   geom_abline(linetype = 2)+
   scale_x_continuous(breaks = seq(0,15,1))+
   scale_y_continuous(breaks = seq(0,15,1))+
   theme_bw()
 
-
+#plotly wrapper for interactivity
 ggplotly(p)
 ```
 
@@ -86,11 +134,11 @@ The test data has `r length(predictions_training$Player)` observations with mean
 
 ```{r training data, echo = FALSE, warning = FALSE}
 
-predictions_training$y_rf_mean <- round(predictions_training$y_rf_mean,2)
+predictions_training$y_hat <- round(predictions_training$y_hat,2)
 
-q <- ggplot(predictions_training, aes(x=y_rf_mean, y = y, color = Pos,
+q <- ggplot(predictions_training, aes(x=y_hat, y = y, color = Pos,
                              text = paste0(Player, " ", Year))) +
-  geom_jitter()+
+  geom_jitter(alpha=0.4, size = 1)+
   geom_abline(linetype = 2)+
   scale_x_continuous(breaks = seq(0,15,1))+
   scale_y_continuous(breaks = seq(0,15,1))+
@@ -100,98 +148,106 @@ q <- ggplot(predictions_training, aes(x=y_rf_mean, y = y, color = Pos,
 ggplotly(q)
 ```
 
-## Testing 2017/2018 season {.tabset .tabset-fade .tabset-pills}
-
 ```{r testing 2018, include = FALSE, cache = TRUE}
-source("Scripts/Preprocessing_test2018.R")
-
-source("Scripts/RandomForest.R")
-
-source("Scripts/Rookies.R")
-
-source("Scripts/Team_Records.R")
-
-predictions_2018 <- data.frame(Player = df_pred$Player,
-                          Year = df_pred$Year_t1+1,
-                          Pos = df_pred$Pos_t1,
-                          y = y_test,
-                          y_rf_mean = rfPred) %>% 
-  mutate(error_rf_mean = y_rf_mean - y) %>% 
-  mutate_if(is.factor, as.character)
+# source("Scripts/Preprocessing_test2018.R")
+# 
+# source("Scripts/RandomForest.R")
+# 
+# source("Scripts/Rookies.R")
+# 
+# source("Scripts/Team_Records.R")
+# 
+# predictions_2018 <- data.frame(Player = df_pred$Player,
+#                           Year = df_pred$Year_t1+1,
+#                           Pos = df_pred$Pos_t1,
+#                           y = y_test,
+#                           y_rf_mean = rfPred) %>% 
+#   mutate(error_rf_mean = y_rf_mean - y) %>% 
+#   mutate_if(is.factor, as.character)
 
 
 ```
-
-### Player Performance
 
 ```{r test data 2018, echo = FALSE, warning = FALSE}
 
-predictions_2018$y_rf_mean <- round(predictions_2018$y_rf_mean,2)
+# predictions_2018$y_rf_mean <- round(predictions_2018$y_rf_mean,2)
+# 
+# p <- ggplot(predictions_2018, aes(x=y_rf_mean, y = y, color = Pos,
+#                              text = paste0(Player, " ", Year))) +
+#   geom_jitter()+
+#   geom_abline(linetype = 2)+
+#   scale_x_continuous(breaks = seq(0,15,1))+
+#   scale_y_continuous(breaks = seq(0,15,1))+
+#   theme_bw()
 
-p <- ggplot(predictions_2018, aes(x=y_rf_mean, y = y, color = Pos,
-                             text = paste0(Player, " ", Year))) +
-  geom_jitter()+
-  geom_abline(linetype = 2)+
-  scale_x_continuous(breaks = seq(0,15,1))+
-  scale_y_continuous(breaks = seq(0,15,1))+
-  theme_bw()
 
-
-ggplotly(p)
+#ggplotly(p)
 ```
 
-### Team Performance
-
 ```{r teams 2018, include = FALSE}
-adv2018 <- read_excel("Data/2018_adv.xlsx") %>% 
-  subset(Tm != "TOT") %>% 
-  group_by(Player) %>% 
-  top_n(n=1,G)
+# adv2018 <- read_excel("Data/2018_adv.xlsx") %>%
+#   subset(Tm != "TOT") %>%
+#   group_by(Player) %>%
+#   top_n(n=1,G)
+# 
+# df2018 <- merge(predictions_2018, adv2018, by = "Player") %>%
+#   dplyr::select(Player, Team = Tm, G, MP, vorp = VORP, prediction_vorp = y_rf_mean)
+# 
+# rookies_2018 <- df_rookies %>%
+#   filter(Year == 2018)
+# 
+# rookies_2018 <- merge(rookies_2018, adv2018, by = "Player") %>%
+#   dplyr::select(Player, Team = Tm.y, G, MP, vorp = VORP, prediction_vorp = vorp_pred)
+# 
+# df2018 <- rbind(df2018,rookies_2018)
 
-df2018 <- merge(predictions_2018, adv2018, by = "Player") %>% 
-  dplyr::select(Player, Team = Tm, G, MP, vorp = VORP, prediction_vorp = y_rf_mean)
-
-rookies_2018 <- df_rookies %>% 
-  filter(Year == 2018)
-
-rookies_2018 <- merge(rookies_2018, adv2018, by = "Player") %>% 
-  dplyr::select(Player, Team = Tm.y, G, MP, vorp = VORP, prediction_vorp = vorp_pred)
-
-df2018 <- rbind(df2018,rookies_2018)
-
-df_2018_Tm <- df2018 %>% 
-  group_by(Team) %>% 
-  dplyr::summarize(vorp = sum(prediction_vorp)) 
-
-df_2018_Tm$wins_pred = predict(lm_teams, newdata = df_2018_Tm)
-
-teams2018 <- subset(teams_all, teams_all$Year == 2018) %>% 
-  dplyr::select(Team, Wins, VORP = vorp)
-
-df_2018_Tm <- merge(df_2018_Tm, teams2018, by = "Team")
+# df_2018_Tm <- df2018 %>% 
+#   group_by(Team) %>% 
+#   dplyr::summarize(vorp = sum(prediction_vorp)) 
+# 
+# df_2018_Tm$wins_pred = predict(lm_teams, newdata = df_2018_Tm)
+# 
+# teams2018 <- subset(teams_all, teams_all$Year == 2018) %>% 
+#   dplyr::select(Team, Wins, VORP = vorp)
+# 
+# df_2018_Tm <- merge(df_2018_Tm, teams2018, by = "Team")
 ```
 
 ```{r team performance 2018, echo = FALSE, warning = FALSE}
-df_2018_Tm$Wins_pred = round(df_2018_Tm$wins_pred,0)
-
-q <- ggplot(df_2018_Tm, aes(x=Wins_pred, y = Wins, text = Team))+
-  geom_point()+
-  # geom_text(aes(label = Team), vjust = -1)+
-  geom_abline(linetype = 2)+
-  scale_x_continuous(breaks = seq(0,70,5))+
-  scale_y_continuous(breaks = seq(0,70,5))+
-  theme_bw()
-
-ggplotly(q)
+# df_2018_Tm$Wins_pred = round(df_2018_Tm$wins_pred,0)
+# 
+# q <- ggplot(df_2018_Tm, aes(x=Wins_pred, y = Wins, text = Team))+
+#   geom_point()+
+#   # geom_text(aes(label = Team), vjust = -1)+
+#   geom_abline(linetype = 2)+
+#   scale_x_continuous(breaks = seq(0,70,5))+
+#   scale_y_continuous(breaks = seq(0,70,5))+
+#   theme_bw()
+# 
+# ggplotly(q)
 ```
 
 ## 2018/19 season {.tabset .tabset-fade .tabset-pills}
 
-```{r 2019 predictions, include = FALSE}
+```{r 2019 predictions, include = FALSE, cache = TRUE}
 source("Scripts/2019/2019_Main.R")
 ```
 
+
 ### Teams
+
+```{r}
+
+predictions_2019 %>% 
+  mutate(vorp = round(vorp,2),
+         Wins_pred_2019 = round(Wins_pred_2019,2),
+         Error_Pred_Vegas = round(Error_Pred_Vegas,2),
+         Error_Pelton_Vegas = round(Error_Pelton_Vegas,2),
+         Sum_Error = round(Sum_Error,2)
+         ) %>% 
+datatable(options = list(scrollX = TRUE))
+```
+
 ```{r team performance 2019, echo = FALSE, warning = FALSE, cache = TRUE}
 q <- ggplot(predictions_2019, aes(y=Wins_pred_2019, x = Wins_Vegas_2019, text = Team))+
   geom_point(aes(color = Sum_Error, size = abs(Sum_Error)))+
