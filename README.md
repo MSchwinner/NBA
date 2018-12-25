@@ -11,8 +11,12 @@ This project focuses on predicting athlete-performance in the National Basketbal
 * [corrplot](https://cran.r-project.org/web/packages/corrplot/corrplot.pdf): Visualization of Correlations
 * [caret](https://cran.r-project.org/web/packages/caret/caret.pdf): Modelling framework
 * [randomForest](https://cran.r-project.org/web/packages/randomForest/randomForest.pdf): Random Forest
+* [DT](https://cran.r-project.org/web/packages/DT/index.html): Interactive html tables
+* [plotly](https://cran.r-project.org/web/packages/plotly/index.html): Interactive Plots
 
 ## ToDos
 
-* Testfile start 2018/19 season - compare to Vegas Line and other Predictions
-* 2019/20 season and predictions
+- [x] Testfile start 2017/18 season - compare to Vegas Line and other Predictions 
+- [x] 2018/19 season and predictions
+- [ ] Update for Team Trades during the 2018/19 season
+- [ ] Evaluate Predictions after the regular season
